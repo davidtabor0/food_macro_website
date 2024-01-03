@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Progress Bars</title>
+  <style>
+    .progress-bar {
+      width: 300px;
+      height: 20px;
+      background-color: #f1f1f1;
+      margin-bottom: 10px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #4CAF50;
+    }
+
+    button {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Progress Bars</h1>
+  
+  <div class="progress-bar">
+    <div id="progress1" class="progress-bar-fill"></div>
+  </div>
+
+  <div class="progress-bar">
+    <div id="progress2" class="progress-bar-fill"></div>
+  </div>
+
+  <div class="progress-bar">
+    <div id="progress3" class="progress-bar-fill"></div>
+  </div>
+
+  <button onclick="increaseProgress('progress1')">Increase Progress 1</button>
+  <button onclick="increaseProgress('progress2')">Increase Progress 2</button>
+  <button onclick="increaseProgress('progress3')">Increase Progress 3</button>
+
+  <script>
+    function increaseProgress(progressId) {
+      var progressBar = document.getElementById(progressId);
+      var currentWidth = progressBar.style.width || '0%';
+      var newWidth = parseInt(currentWidth) + 10;
+
+      if (newWidth > 100) {
+        newWidth = 100;
+      }
+
+      progressBar.style.width = newWidth + '%';
+    }
+  </script>
+</body>
+</html>
