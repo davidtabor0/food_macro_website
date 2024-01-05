@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Progress Bars</title>
+  <title>Macro Bars</title>
   <style>
     .progress-bar {
       width: 300px;
@@ -18,23 +18,51 @@
     button {
       margin-right: 10px;
     }
+
+    .form-wrapper {
+      display: flex;
+      align-items: center;
+    }
+
+    .form-wrapper form {
+      margin-right: 10px;
+    }
   </style>
 </head>
 <body>
   <h1>Progress Bars</h1>
   
   <div class="progress-bar">
-    <div id="progress1" class="progress-bar-fill"></div>
+    <div id="progress1" class="progress-bar-fill">Carbs: {{ carbs }}</div>
   </div>
 
   <div class="progress-bar">
-    <div id="progress2" class="progress-bar-fill"></div>
+    <div id="progress2" class="progress-bar-fill">Fat: {{ fats }}</div>
   </div>
 
   <div class="progress-bar">
-    <div id="progress3" class="progress-bar-fill"></div>
+    <div id="progress3" class="progress-bar-fill">Protein: {{ proteins }}</div>
   </div>
 
+<div class="form-wrapper">
+    <form action="/submit-fat" method="post">
+        <label for="fatInput">Fat:</label>
+        <input type="number" id="fatInput" name="fatInput" min="0" step="1">
+        <input type="submit" value="Submit">
+      </form>
+      
+      <form action="/submit-carbs" method="post">
+        <label for="carbsInput">Carbs:</label>
+        <input type="number" id="carbsInput" name="carbsInput" min="0" step="1">
+        <input type="submit" value="Submit">
+      </form>
+      
+      <form action="/submit-protein" method="post">
+        <label for="proteinInput">Protein:</label>
+        <input type="number" id="proteinInput" name="proteinInput" min="0" step="1">
+        <input type="submit" value="Submit">
+      </form>  </div>
+  
   <button onclick="increaseProgress('progress1')">Increase Progress 1</button>
   <button onclick="increaseProgress('progress2')">Increase Progress 2</button>
   <button onclick="increaseProgress('progress3')">Increase Progress 3</button>

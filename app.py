@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
@@ -10,8 +10,29 @@ def hello():
 
 @app.route('/dog')
 def dog():
-    return render_template('tracking.html')
+    carbs = 100
+    fats = 150
+    proteins = 200
+    return render_template('tracking.html', carbs=carbs, fats=fats, proteins=proteins)
 
-# If run this file instead of using commands, then server launches in debug.
+@app.route('/submit-fat', methods=['POST'])
+def submit_fat():
+    fat = int(request.form['fatInput'])
+    print("Fat eaten:", fat)
+    return redirect(url_for('dog'))
+    
+@app.route('/submit-carbs', methods=['POST'])
+def submit_carbs():
+    carbs = int(request.form['carbsInput'])
+    print("Carbs eaten:", carbs)
+    return redirect(url_for('dog'))
+
+@app.route('/submit-protein', methods=['POST'])
+def submit_protein():
+    protein = int(request.form['proteinInput'])
+    print("Carbs eaten:", protein)
+    return redirect(url_for('dog'))
+
+# If this file is run to launch the flask server, instead of using commands, then the server launches in debug.
 if __name__ == '__main__':
     app.run(debug=True)
