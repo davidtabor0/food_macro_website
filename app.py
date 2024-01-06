@@ -19,24 +19,23 @@ def tracking():
 
 @app.route('/submit-fat', methods=['POST'])
 def submit_fat():
-    fat = int(request.form['fatInput'])
-    print("Fat eaten:", fat) # TESTING
+    global fat
+    new_fat = int(request.form['fatInput'])
+    fat += new_fat
     return redirect(url_for('tracking'))
     
 @app.route('/submit-carbs', methods=['POST'])
 def submit_carbs():
     global carbs
     new_carbs = int(request.form['carbsInput'])
-    print("before", carbs)
     carbs += new_carbs
-    print("Carbs eaten:", new_carbs) # TESTING
-    print("after", carbs)
     return redirect(url_for('tracking')) # <- item in quotes is the name of the function for that route.
 
 @app.route('/submit-protein', methods=['POST'])
 def submit_protein():
-    protein = int(request.form['proteinInput'])
-    print("Carbs eaten:", protein) # TESTING
+    global protein
+    new_protein = int(request.form['proteinInput'])
+    protein += new_protein
     return redirect(url_for('tracking'))
 
 # If this file is run to launch the flask server, instead of using commands, then the server launches in debug.
