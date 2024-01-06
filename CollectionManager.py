@@ -1,4 +1,4 @@
-import pymongo
+from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
 
@@ -8,7 +8,7 @@ class CollectionManager:
     """
     def __init__(self, db_name: str, collection_name: str):
         """
-        Initialize a CollectionManager
+        Initialize the CollectionManager object.
         """
         self.db_name = db_name
         self.collection_name = collection_name
@@ -30,7 +30,7 @@ class CollectionManager:
         Connect to MongoDB and set up collection.
         """
         if not self.client:
-            self.client = pymongo.MongoClient(self.connection_string)
+            self.client = MongoClient(self.connection_string)
             self.db = self.client[self.db_name]
             self.collection = self.db[self.collection_name]
 
