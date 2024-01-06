@@ -22,21 +22,30 @@ def tracking():
 
 @bp.route('/submit-fat', methods=['POST'])
 def submit_fat():
-    global fat
+    global my_collection
+    document = my_collection.find_one_doc({})
+    fat = document['fat']
     new_fat = int(request.form['fatInput'])
-    fat += new_fat
-    return redirect(url_for('tracking'))
-    
+    updated_fat = fat + new_fat
+    my_collection.update_one_doc(document, {'$set': {'fat': updated_fat}})
+    return redirect(url_for('routes.tracking')) # <- item in quotes is the name of the function for that route.
+
 @bp.route('/submit-carbs', methods=['POST'])
 def submit_carbs():
-    global carbs
+    global my_collection
+    document = my_collection.find_one_doc({})
+    carbs = document['carbs']
     new_carbs = int(request.form['carbsInput'])
-    carbs += new_carbs
-    return redirect(url_for('tracking')) # <- item in quotes is the name of the function for that route.
+    updated_carbs = carbs + new_carbs
+    my_collection.update_one_doc(document, {'$set': {'carbs': updated_carbs}})
+    return redirect(url_for('routes.tracking')) # <- item in quotes is the name of the function for that route.
 
 @bp.route('/submit-protein', methods=['POST'])
 def submit_protein():
-    global protein
+    global my_collection
+    document = my_collection.find_one_doc({})
+    protein = document['protein']
     new_protein = int(request.form['proteinInput'])
-    protein += new_protein
-    return redirect(url_for('tracking'))
+    updated_protein = protein + new_protein
+    my_collection.update_one_doc(document, {'$set': {'protein': updated_protein}})
+    return redirect(url_for('routes.tracking'))

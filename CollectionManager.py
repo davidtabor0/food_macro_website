@@ -4,7 +4,7 @@ import os
 
 class CollectionManager:
     """
-    Object to manage collections with MongoDB.
+    Object to manipulate a MongoDB collection.
     """
     def __init__(self, db_name: str, collection_name: str):
         """
