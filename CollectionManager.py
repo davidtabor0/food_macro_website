@@ -51,7 +51,7 @@ class CollectionManager:
         """
         return self.collection.find_one(query, projection)
     
-    def find_many_docs(self, query: dict, projection: dict = None):
+    def find_many_docs(self, query: dict = {}, projection: dict = None):
         """
         Finds multiple matching documents within the collection.
 
@@ -60,3 +60,39 @@ class CollectionManager:
         returns: iterable pymongo cursor object. 
         """
         return self.collection.find(query, projection)
+    
+    def delete_many_docs(self, filter : dict):
+        """
+        Deletes multiple matching documents within the collection.
+
+        filter: Filter to find your documents.
+        """
+        return self.collection.delete_many(filter)
+    
+    def update_one_doc(self, filter : dict, update : dict):
+        """
+        Updates one document in the collection based on the filter and new data in update.
+
+        filter: Filter to find your document to update.
+        update: New data to be updated. 
+        """
+        return self.collection.update_one(filter, update)
+    
+    def update_many_docs(self, filter : dict):
+        """
+        Updates all documents matching the filter.
+
+        filter: Filter to find your documents.
+        update: New data to be updated.
+        """
+        return self.collection.delete_many(filter)
+    
+    def count_docs(self, filter : dict = {}) -> int:
+        """
+        Counts number of documents in the collection and returns that value.
+
+        filter: Filter to find your documents.
+        returns: integer
+        """
+        return self.collection.count_documents(filter)
+    

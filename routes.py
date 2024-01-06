@@ -1,4 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for
+from CollectionManager import CollectionManager
+
+# Initialize a collection under DB name 'MacroTracker' and collection name 'testing123'
+my_collection = CollectionManager('MacroTracker', 'testing123')
 
 #Initialize blueprint
 bp = Blueprint('routes', __name__)
@@ -11,8 +15,10 @@ def hello():
 @bp.route('/')
 @bp.route('/tracking') 
 def tracking():
-    global carbs, fat, protein
-    return render_template('tracking.html', carbs=carbs, fat=fat, protein=protein)
+    global my_collection
+    document = my_collection.find_one_doc({})
+    fat, carbs, protein = document['fat'], document['carbs'], document['protein']
+    return render_template('tracking.html', fat=fat, carbs=carbs, protein=protein)
 
 @bp.route('/submit-fat', methods=['POST'])
 def submit_fat():
