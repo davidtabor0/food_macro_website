@@ -1,10 +1,25 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from CollectionManager import CollectionManager
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired
 
 # Initialize a collection under DB name 'MacroTracker' and collection name 'testing123'
 my_collection = CollectionManager('MacroTracker', 'testing123')
 
-#Initialize blueprint
+# Create login and submit form classes.
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Log In')
+
+class RegistrationForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired()])
+    submit = SubmitField('Register')
+
+#Initialize blueprint to save the routes to.
 bp = Blueprint('routes', __name__)
 
 #Define routes to the blueprint
@@ -19,6 +34,29 @@ def tracking():
     document = my_collection.find_one_doc({})
     fat, carbs, protein = document['fat'], document['carbs'], document['protein']
     return render_template('tracking.html', fat=fat, carbs=carbs, protein=protein)
+
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():  # Data processing when submitted.
+        email = form.email.data
+        password = form.password.data
+        print(f'\n\n!User Login!\nEmail: {email}\nPassword: {password}\n\n')
+        #TODO Find matching user if exists in DB and log thm in.
+        return redirect('/tracking')  # Send the user to the main page of interest after they log in.
+    return render_template('login.html', form=form)
+
+@bp.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():  # Submission logic
+        email = form.email.data
+        password = form.password.data
+        confirm_password = form.confirm_password.data
+        #Check if data is valid
+        #i.e., valid email, appropriate password, matching passwords, user doesnt exist already, etc.
+        return redirect('/login')
+    return render_template('register.html', form=form) 
 
 @bp.route('/submit-fat', methods=['POST'])
 def submit_fat():

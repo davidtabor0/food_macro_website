@@ -1,8 +1,17 @@
 from flask import Flask
 from routes import bp
 from CollectionManager import CollectionManager
+from flask_wtf.csrf import CSRFProtect  # Protect site from cross-site request forgery attacks.
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
+
+# Load the secret key from .env
+load_dotenv()
+secret_key = os.getenv('SEC_KEY')
+app.config['SECRET_KEY'] = secret_key
+
 
 my_collection = CollectionManager('MacroTracker', 'testing123')
 
