@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os
 
 app = Flask(__name__)
+csrf = CSRFProtect(app)
 
 # Load the secret key from .env
 load_dotenv()

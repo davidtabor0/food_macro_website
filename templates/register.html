@@ -1,0 +1,17 @@
+<!-- register.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <h1>Register</h1>
+    <form method="POST" action="{{ url_for('routes.register') }}">
+        {{ form.csrf_token }}
+        {{ form.email.label }} {{ form.email }}
+        {{ form.password.label }} {{ form.password }}
+        {{ form.confirm_password.label}} {{ form.confirm_password }}
+        {{ form.submit }}
+    </form>
+</body>
+</html>
