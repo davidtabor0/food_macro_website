@@ -13,18 +13,17 @@ load_dotenv()
 secret_key = os.getenv('SEC_KEY')
 app.config['SECRET_KEY'] = secret_key
 
-
-my_collection = CollectionManager('MacroTracker', 'testing123')
+data_collection = CollectionManager('MacroTracker', 'Data')
 
 # Placeholder values if the collection has no values yet.
-doc_count = my_collection.count_docs()
+doc_count = data_collection.count_docs()  # This can be moved to the registration route to set up 0's on reg
 if doc_count == 0:
     empty_macros = {
         'fat' : 0,
         'carbs' : 0,
         'protein': 0,
     }
-    my_collection.insert_one_doc(empty_macros)
+    data_collection.insert_one_doc(empty_macros)
 
 # Register the blueprint created in routes.py
 app.register_blueprint(bp)
