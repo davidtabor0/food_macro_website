@@ -1,6 +1,5 @@
 from flask import Flask
 from routes import bp
-from CollectionManager import CollectionManager
 from flask_wtf.csrf import CSRFProtect  # Protect site from cross-site request forgery attacks.
 from dotenv import load_dotenv
 import os
@@ -12,18 +11,6 @@ csrf = CSRFProtect(app)
 load_dotenv()
 secret_key = os.getenv('SEC_KEY')
 app.config['SECRET_KEY'] = secret_key
-
-data_collection = CollectionManager('MacroTracker', 'Data')
-
-# Placeholder values if the collection has no values yet.
-doc_count = data_collection.count_docs()  # This can be moved to the registration route to set up 0's on reg
-if doc_count == 0:
-    empty_macros = {
-        'fat' : 0,
-        'carbs' : 0,
-        'protein': 0,
-    }
-    data_collection.insert_one_doc(empty_macros)
 
 # Register the blueprint created in routes.py
 app.register_blueprint(bp)
