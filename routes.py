@@ -140,12 +140,12 @@ def register():
 # SUBMIT FAT
 @bp.route('/submitfat', methods=['POST'])
 def submitfat():
-    global data_collection
-    user_id = session.get('user_id')
-    document = data_collection.find_one({'user_id' : user_id})
-    current_fat = document['fat']
     form = IntegerForm()
     if form.validate_on_submit():  # Data processing when submitted.
+        global data_collection
+        user_id = session.get('user_id')
+        document = data_collection.find_one({'user_id' : user_id})
+        current_fat = document['fat']
         new_fat = form.number.data
         updated_fat = current_fat + new_fat
         data_collection.update_one(document, {'$set': {'fat': updated_fat}})
@@ -155,11 +155,12 @@ def submitfat():
 # SUBMIT CARBS
 @bp.route('/submit-carbs', methods=['POST'])
 def submit_carbs():
-    global data_collection
-    document = data_collection.find_one({})
-    current_carbs = document['carbs']
     form = IntegerForm()
     if form.validate_on_submit():  # Data processing when submitted.
+        global data_collection
+        user_id = session.get('user_id')
+        document = data_collection.find_one({'user_id' : user_id})
+        current_carbs = document['carbs']
         new_carbs = form.number.data
         updated_carbs = current_carbs + new_carbs
         data_collection.update_one(document, {'$set': {'carbs': updated_carbs}})
@@ -169,11 +170,12 @@ def submit_carbs():
 # SUBMIT PROTEIN
 @bp.route('/submit-protein', methods=['POST'])
 def submit_protein():
-    global data_collection
-    document = data_collection.find_one({})
-    current_protein = document['protein']
     form = IntegerForm()
     if form.validate_on_submit():  # Data processing when submitted.
+        global data_collection
+        user_id = session.get('user_id')
+        document = data_collection.find_one({'user_id' : user_id})
+        current_protein = document['protein']
         new_protein = form.number.data
         updated_protein = current_protein + new_protein
         data_collection.update_one(document, {'$set': {'protein': updated_protein}})
