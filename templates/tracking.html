@@ -27,12 +27,32 @@
     .form-wrapper form {
       margin-right: 10px;
     }
+
+    .nav-wrapper {
+      margin-bottom: 10px;
+    }
+
+    .nav-button {
+      margin-right: 10px;
+    }
   </style>
 </head>
 
-<body>
-  <h1>Progress Bars</h1>
+<body>  
+  <div class="nav-wrapper">
+    <a href="{{ url_for('routes.register') }}" class="nav-button">
+      Register
+    </a>
+    <a href="{{ url_for('routes.register') }}" class="nav-button">
+      Login
+    </a>
+    <a href="{{ url_for('routes.register') }}" class="nav-button">
+      Tracking
+    </a>
+  </div>
   
+  <h1>Track them macros</h1>
+
   <div class="progress-bar">
     <div id="progress1" class="progress-bar-fill">Fat: {{ saved_values['fat'] }}</div>
   </div>

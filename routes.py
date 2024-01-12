@@ -4,11 +4,12 @@ from wtforms import StringField, PasswordField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 import os
+from bson import ObjectId
 from datetime import datetime
 
-# Initialize a collections
+# Initialize collections
 load_dotenv()
 client =  MongoClient(os.getenv('CONN_STR'))
 db = client['MacroTracker']
@@ -31,6 +32,17 @@ class IntegerForm(FlaskForm):
     number = IntegerField()
     submit = SubmitField('Submit')
 
+def submit_data(form, macro : str):
+    global data_collection
+    #user_id = session.get('user_id')
+    doc_id = ObjectId(session.get('doc_id'))
+
+    document = data_collection.find_one({'_id': doc_id})  # Load the document to be updated.
+    current_macro = document[macro]
+    new_macro = form.number.data
+    updated_macro = current_macro + new_macro
+    data_collection.update_one(document, {'$set': {macro: updated_macro}})
+    return redirect(url_for('routes.tracking'))
 
 #Initialize blueprint to save the routes to.
 bp = Blueprint('routes', __name__)
@@ -49,10 +61,12 @@ def tracking():
     fatform = IntegerForm()
     carbform = IntegerForm()
     proteinform = IntegerForm()
-    #date = datetime.now().isoformat()[:10]
     user_id = session.get('user_id')
+
     # Retrieve the most recent document from the current user
-    saved_values = data_collection.find_one({'user_id': user_id})
+    query_results = data_collection.find({'user_id': user_id}).sort('date', DESCENDING).limit(1)
+    saved_values = query_results.next()
+    session['doc_id'] = str(saved_values['_id'])
     return render_template('tracking.html', saved_values=saved_values, carbform=carbform, proteinform=proteinform, fatform=fatform)
 
 # LOGIN
@@ -67,7 +81,7 @@ def login():
 
         # Get user by matching email from DB.
         user = user_collection.find_one({'email': email})
-        if user:  #Check if user exists.
+        if user:  # Check if user exists.
             passsword_hash = user['password']
             if check_password_hash(passsword_hash, password):
                 session['user_id'] = str(user['_id'])  # Set user_id for the session as the _id of their entry in Mongo.
@@ -76,9 +90,9 @@ def login():
                 print('Login Success.')
 
                 return redirect('/tracking')
-            else:  #If passwords dont match.
+            else:  # If passwords dont match.
                 return redirect('/login')
-        else:  #If user doesn't exist.
+        else:  # If user doesn't exist.
             return redirect('/login')
 
     return render_template('login.html', form=form)
@@ -138,18 +152,11 @@ def register():
     return render_template('register.html', form=form) 
 
 # SUBMIT FAT
-@bp.route('/submitfat', methods=['POST'])
+@bp.route('/submit-fat', methods=['POST'])
 def submitfat():
     form = IntegerForm()
     if form.validate_on_submit():  # Data processing when submitted.
-        global data_collection
-        user_id = session.get('user_id')
-        document = data_collection.find_one({'user_id' : user_id})
-        current_fat = document['fat']
-        new_fat = form.number.data
-        updated_fat = current_fat + new_fat
-        data_collection.update_one(document, {'$set': {'fat': updated_fat}})
-        return redirect(url_for('routes.tracking'))
+        submit_data(form, 'fat')
     return redirect(url_for('routes.tracking')) 
 
 # SUBMIT CARBS
@@ -157,14 +164,7 @@ def submitfat():
 def submit_carbs():
     form = IntegerForm()
     if form.validate_on_submit():  # Data processing when submitted.
-        global data_collection
-        user_id = session.get('user_id')
-        document = data_collection.find_one({'user_id' : user_id})
-        current_carbs = document['carbs']
-        new_carbs = form.number.data
-        updated_carbs = current_carbs + new_carbs
-        data_collection.update_one(document, {'$set': {'carbs': updated_carbs}})
-        return redirect(url_for('routes.tracking'))
+        submit_data(form, 'carbs')
     return redirect(url_for('routes.tracking'))
 
 # SUBMIT PROTEIN
@@ -172,12 +172,5 @@ def submit_carbs():
 def submit_protein():
     form = IntegerForm()
     if form.validate_on_submit():  # Data processing when submitted.
-        global data_collection
-        user_id = session.get('user_id')
-        document = data_collection.find_one({'user_id' : user_id})
-        current_protein = document['protein']
-        new_protein = form.number.data
-        updated_protein = current_protein + new_protein
-        data_collection.update_one(document, {'$set': {'protein': updated_protein}})
-        return redirect(url_for('routes.tracking'))
+        submit_data(form, 'protein')
     return redirect(url_for('routes.tracking')) 
