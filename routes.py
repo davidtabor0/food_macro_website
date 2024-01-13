@@ -8,6 +8,7 @@ from pymongo import MongoClient, DESCENDING
 import os
 from bson import ObjectId
 from datetime import datetime
+from functools import wraps
 
 # Initialize collections
 load_dotenv()
@@ -47,25 +48,48 @@ def submit_data(form, macro : str):
 #Initialize blueprint to save the routes to.
 bp = Blueprint('routes', __name__)
 
+# Create login required decorator.
+def login_required(view_func):
+    @wraps(view_func)
+    def wrapper(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('routes.login'))
+        return view_func(*args, **kwargs)
+    return wrapper
+
 #Define routes to the blueprint
 # HOME
+@bp.route('/')
 @bp.route('/home')
 def hello():
     return render_template('home.html')
 
 # TRACKING
-@bp.route('/')
-@bp.route('/tracking')  # Should only be accessible to logged in users. TODO
+@bp.route('/tracking')
+@login_required
 def tracking():
     global data_collection
     fatform = IntegerForm()
     carbform = IntegerForm()
     proteinform = IntegerForm()
-    user_id = session.get('user_id')
 
     # Retrieve the most recent document from the current user
+    user_id = session.get('user_id')
     query_results = data_collection.find({'user_id': user_id}).sort('date', DESCENDING).limit(1)
     saved_values = query_results.next()
+
+    # Determine if this most recent document is today's doc, and if not add one for today.
+    date = datetime.now().isoformat()[:10]
+    if saved_values['date'] != date:
+        empty_data = {
+            'user_id' : user_id,
+            'date' : date,
+            'fat' : 0,
+            'carbs' : 0,
+            'protein': 0,
+            }
+        data_collection.insert_one(empty_data)
+
     session['doc_id'] = str(saved_values['_id'])
     return render_template('tracking.html', saved_values=saved_values, carbform=carbform, proteinform=proteinform, fatform=fatform)
 
@@ -96,6 +120,11 @@ def login():
             return redirect('/login')
 
     return render_template('login.html', form=form)
+
+@bp.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/login')
 
 # REGISTER
 @bp.route('/register', methods=['GET', 'POST'])
@@ -155,7 +184,7 @@ def register():
 @bp.route('/submit-fat', methods=['POST'])
 def submitfat():
     form = IntegerForm()
-    if form.validate_on_submit():  # Data processing when submitted.
+    if form.validate_on_submit(): 
         submit_data(form, 'fat')
     return redirect(url_for('routes.tracking')) 
 
@@ -163,7 +192,7 @@ def submitfat():
 @bp.route('/submit-carbs', methods=['POST'])
 def submit_carbs():
     form = IntegerForm()
-    if form.validate_on_submit():  # Data processing when submitted.
+    if form.validate_on_submit():  
         submit_data(form, 'carbs')
     return redirect(url_for('routes.tracking'))
 
@@ -171,6 +200,6 @@ def submit_carbs():
 @bp.route('/submit-protein', methods=['POST'])
 def submit_protein():
     form = IntegerForm()
-    if form.validate_on_submit():  # Data processing when submitted.
+    if form.validate_on_submit():  
         submit_data(form, 'protein')
     return redirect(url_for('routes.tracking')) 
