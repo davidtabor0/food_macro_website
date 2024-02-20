@@ -33,9 +33,14 @@ class IntegerForm(FlaskForm):
     number = IntegerField()
     submit = SubmitField('Submit')
 
+class GoalsForm(FlaskForm):
+    fat_goal = IntegerField()
+    carbs_goal = IntegerField()    
+    protein_goal = IntegerField()
+    submit = SubmitField('Submit')
+
 def submit_data(form, macro : str):
     global data_collection
-    #user_id = session.get('user_id')
     doc_id = ObjectId(session.get('doc_id'))
 
     document = data_collection.find_one({'_id': doc_id})  # Load the document to be updated.
@@ -160,7 +165,10 @@ def register():
         password_hash = generate_password_hash(password)
         new_user = {
             'email': email, 
-            'password': password_hash
+            'password': password_hash,
+            'fat_goal': 0,
+            'carbs_goal': 0,
+            'protein_goal': 0
         }
         user_collection.insert_one(new_user)
         print('Registration success.')
@@ -179,6 +187,23 @@ def register():
         data_collection.insert_one(new_data)
         return redirect('/login')
     return render_template('register.html', form=form) 
+
+# DASHBOARD
+@bp.route('/dashboard', methods=['GET', 'POST'])
+@login_required
+def dashboard():
+    global user_collection
+    form = GoalsForm()
+    user_id = session.get('user_id')
+    # user_id is a string, not an ObjectID
+    user = data_collection.find_one({'user_id': user_id}) 
+
+    if form.validate_on_submit():
+        user_collection.update_one(user, {'$set': {'fat_goal': form.fat_goal }})
+        user_collection.update_one(user, {'$set': {'carbs_goal': form.carbs_goal }})
+        user_collection.update_one(user, {'$set': {'protein_goal': form.protein_goal }})
+        return redirect(url_for('routes.tracking'))
+    return render_template('dashboard.html', form=form, user=user)
 
 # SUBMIT FAT
 @bp.route('/submit-fat', methods=['POST'])

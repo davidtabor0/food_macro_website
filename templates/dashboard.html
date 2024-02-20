@@ -1,0 +1,24 @@
+<!-- dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>dashboard</title>
+</head>
+<body>
+    <h1>User Stuff</h1>
+    <div>
+        <form method="POST" action="{{ url_for('routes.dashboard') }}">
+            {{ form.csrf_token }}
+            {{ form.fat_goal.label }} {{ form.fat_goal }}
+            {{ form.carbs_goal.label }} {{ form.carbs_goal }}
+            {{ form.protein_goal.label}} {{ form.protein_goal }}
+            {{ form.submit }}
+        </form>
+    </div>
+    <div>
+        Current fat goal: {{ user['fat_goal'] }}        
+        Current carb goal: {{ user['carbs_goal'] }}
+        Current protein goal: {{ user['protein_goal'] }}
+    </div>
+</body>
+</html>
