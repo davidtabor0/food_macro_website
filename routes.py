@@ -78,10 +78,13 @@ def tracking():
     carbform = IntegerForm()
     proteinform = IntegerForm()
 
-    # Retrieve the most recent document from the current user
+    # Load user data.
     user_id = session.get('user_id')
+    user = user_collection.find_one({'_id': ObjectId(user_id)})
+
+    # Retrieve the most recent document from the current user
     query_results = data_collection.find({'user_id': user_id}).sort('date', DESCENDING).limit(1)
-    saved_values = query_results.next()
+    saved_values = query_results.next() # query_results is a cursor.
 
     # Determine if this most recent document is today's doc, and if not add one for today.
     date = datetime.now().isoformat()[:10]
@@ -94,9 +97,15 @@ def tracking():
             'protein': 0,
             }
         data_collection.insert_one(empty_data)
+        return redirect('/tracking') # Refresh the user so they have the correct day's stats.
 
     session['doc_id'] = str(saved_values['_id'])
-    return render_template('tracking.html', saved_values=saved_values, carbform=carbform, proteinform=proteinform, fatform=fatform)
+    return render_template('tracking.html',
+                            saved_values=saved_values,
+                            carbform=carbform,
+                            proteinform=proteinform,
+                            fatform=fatform,
+                            user=user)
 
 # LOGIN
 @bp.route('/login', methods=['GET', 'POST'])
@@ -193,17 +202,17 @@ def register():
 @login_required
 def dashboard():
     global user_collection
-    form = GoalsForm()
-    user_id = session.get('user_id')
-    # user_id is a string, not an ObjectID
-    user = data_collection.find_one({'user_id': user_id}) 
+    form = GoalsForm() 
+    user_id = session.get('user_id') 
+    user = user_collection.find_one({'_id': ObjectId(user_id)})
+    print(user)
 
     if form.validate_on_submit():
-        user_collection.update_one(user, {'$set': {'fat_goal': form.fat_goal }})
-        user_collection.update_one(user, {'$set': {'carbs_goal': form.carbs_goal }})
-        user_collection.update_one(user, {'$set': {'protein_goal': form.protein_goal }})
+        user_collection.update_one(user, {'$set': {'fat_goal': form.fat_goal.data,
+                                                    'carbs_goal': form.carbs_goal.data,
+                                                    'protein_goal': form.protein_goal.data }})
         return redirect(url_for('routes.tracking'))
-    return render_template('dashboard.html', form=form, user=user)
+    return render_template('dashboard.html', form=form)
 
 # SUBMIT FAT
 @bp.route('/submit-fat', methods=['POST'])

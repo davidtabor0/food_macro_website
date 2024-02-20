@@ -41,9 +41,10 @@
 <body>  
   <div class="nav-wrapper">
     <a href="{{ url_for('routes.register') }}" class="nav-button">Register</a>
-    <a href="{{ url_for('routes.register') }}" class="nav-button">Login</a>
-    <a href="{{ url_for('routes.register') }}" class="nav-button">Tracking</a>
-    <a href="{{ url_for('routes.logout') }}">Logout</a>
+    <a href="{{ url_for('routes.login') }}" class="nav-button">Login</a>
+    <a href="{{ url_for('routes.tracking') }}" class="nav-button">Tracking</a>
+    <a href="{{ url_for('routes.logout') }}" class="nav-button">Logout</a>
+    <a href="{{ url_for('routes.dashboard') }}" class="nav-button">Dashboard</a>
   </div>
   
   <h1>Track them macros</h1>
@@ -64,7 +65,7 @@
     <div id="progress3" class="progress-bar-fill">Protein: {{ saved_values['protein'] }}</div>
   </div>
 
-<div class="form-wrapper">
+  <div class="form-wrapper">
       <form method="POST" action="{{ url_for('routes.submitfat') }}">
         {{ fatform.csrf_token }}
         Fat {{ fatform.number }}
@@ -81,6 +82,12 @@
         {{ proteinform.csrf_token }}
         Protein {{ proteinform.number }}
         {{ proteinform.submit }}
-      </form>  </div>
+      </form>  
+  </div>
+  <div>
+    Current fat goal: {{ user['fat_goal'] }}        
+    Current carb goal: {{ user['carbs_goal'] }}
+    Current protein goal: {{ user['protein_goal'] }}
+  </div>
 </body>
 </html>
