@@ -51,37 +51,6 @@ def submit_data(form, macro : str):
     data_collection.update_one(document, {'$set': {macro: updated_macro}})
     return redirect(url_for('routes.tracking'))
 
-def get_macro_data(food_name):
-    url = "https://api.nal.usda.gov/fdc/v1/foods/search"
-    params = {
-        "api_key": os.getenv("API_KEY"),
-        "query": food_name,
-        "dataType": "Foundation",
-        "pageSize": 1
-        }
-    
-    response = requests.get(url, params=params)
-    
-    if response.status_code == 200:
-        data = response.json()
-        
-        if data["foods"]:
-            food = data["foods"][0]
-            nutrients = food["foodNutrients"]
-            print(food['description'] + ', serving size is 100g excluding refuse.')
-
-            for nutrient in nutrients:
-                nutrient_name = nutrient["nutrientName"]
-                nutrient_value = nutrient["value"]
-                unit_name = nutrient["unitName"]
-                
-                if nutrient_name in ["Total lipid (fat)", "Protein", "Carbohydrate, by difference"]:
-                    print(f"{nutrient_name}: {nutrient_value} {unit_name}")
-        else:
-            print("Food not found.")
-    else:
-        print("Error:", response.status_code)
-
 #Initialize blueprint to save the routes to.
 bp = Blueprint('routes', __name__)
 
@@ -109,7 +78,6 @@ def tracking():
     fatform = IntegerForm()
     carbform = IntegerForm()
     proteinform = IntegerForm()
-    get_macro_data("whole milk")
 
     # Load user data.
     user_id = session.get('user_id')

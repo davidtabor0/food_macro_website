@@ -2,6 +2,17 @@
 <html>
 <head>
   <title>Macronutrient Tracking</title>
+  <script>
+  function loadDoc() {
+    const searchQuery = document.getElementById("searchInput").value;
+    const xhttp = new XMLHttpRequest();
+      xhttp.onload = function() {
+      document.getElementById("demo").innerHTML = this.responseText;
+    }
+  xhttp.open("GET", "http://localhost:5000/api/search?query=" + encodeURIComponent(searchQuery), true);
+  xhttp.send();
+  }
+  </script>
   <style>
     button {
       margin-right: 10px;
@@ -71,6 +82,11 @@
         Protein {{ proteinform.number }}
         {{ proteinform.submit }}
       </form>  
+  </div>
+  <div>
+    <h2>Search for Food</h2>
+    <input type="text" id="searchInput" placeholder="Enter a food name">
+    <button type="button" onclick="loadDoc()">Search</button>
   </div>
 </body>
 </html>

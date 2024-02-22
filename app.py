@@ -1,11 +1,14 @@
 from flask import Flask
+from flask_cors import CORS
 from routes import bp
+from api import api
 from flask_wtf.csrf import CSRFProtect  # Protect site from cross-site request forgery attacks.
 from dotenv import load_dotenv
 import os
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Load the secret key from .env
 load_dotenv()
@@ -14,6 +17,7 @@ app.config['SECRET_KEY'] = secret_key
 
 # Register the blueprint created in routes.py
 app.register_blueprint(bp)
+app.register_blueprint(api, url_prefix='/api')
 
 if __name__ == '__main__':
     app.run(debug=True)  # Run in debug mode.
