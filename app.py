@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_cors import CORS
 from routes import bp
 from api import api
 from flask_wtf.csrf import CSRFProtect  # Protect site from cross-site request forgery attacks.
@@ -8,7 +7,6 @@ import os
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
-cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Load the secret key from .env
 load_dotenv()

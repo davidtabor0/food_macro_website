@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 import os
 import requests
 
@@ -44,9 +44,12 @@ def get_macro_data(food_name):
 
 api = Blueprint('api_routes', __name__)
 
-@api.route('/api/search', methods=['GET'])
+@api.route('/search', methods=['GET'])
 def search():
+    print("data requested!!!")
     query = request.args.get('query')
-    results = get_macro_data(query)
+    result = get_macro_data(query)
+    response = make_response(jsonify(result))
+    response.headers.add('Access-Control-Allow-Origin', '*')
     #process results?
-    return jsonify(results)
+    return response
